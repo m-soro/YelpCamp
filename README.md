@@ -48,6 +48,8 @@
 * Set up route to show form
     - instead of having the form inside the campgrounds page, we'll create a separate page to add in a new campground.
     - use `GET` request.
-    - `app.get('/campgrounds/new')` **shows the form that will send the data to the campgrounds post route->** `app.post('/campgrounds')`.
+    - `app.get('/campgrounds/new')` **shows the form that will send the data to the campgrounds post route** `app.post('/campgrounds')`.
 
-* add basic unstyled form    
+* Add basic unstyled form
+    - fix header with `jumbotron`.
+    - stick everything inside `<div class="container">` to give it white space around the sides, and any sections that needs whitespace.
