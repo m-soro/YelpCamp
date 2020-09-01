@@ -1,39 +1,90 @@
-var express = require('express')
-var app = express();
-var bodyParser = require('body-parser');
+var express = require('express'),
+    app = express(),
+    bodyParser = require('body-parser')
+    mongoose = require('mongoose')
 
+mongoose.connect('mongodb://localhost/yelp_camp',
+{useNewUrlParser:true, useUnifiedTopology: true});
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set('view engine', 'ejs');
 
-var campgrounds = [
-  {name: 'Camp Leon', image:'https://www.campverde.az.gov/Home/ShowPublishedImage/574/637268597658600000' },
-  {name: 'Beaver Tail\'s', image:'https://media-cdn.tripadvisor.com/media/photo-s/13/b8/8a/28/olakira-camp-asilia-africa.jpg' },
-  {name: 'Camp Mary', image: 'https://ellaslist.com.au/system/articles/featured_images/000/002/240/original/summer_camp_for_adults.jpg?1504032697'}
-];
+// SCHEMA setup
+var Schema = mongoose.Schema;
+var campgroundSchema = new Schema({
+  name: String,
+  image: String,
+  description: String
+});
+
+var Campground = mongoose.model('Campground', campgroundSchema);
+
+// Campground.create(
+//   {
+//     name: 'Granite Hill',
+//     image: 'https://www.appletonmn.com/vertical/Sites/%7B4405B7C1-A469-4999-9BC5-EC3962355392%7D/uploads/campground_(2).jpg',
+//     description: 'Wonderful campground 1 hour away from Washington DC!'
+//   },
+//   function(err, newCampground){
+//     if(err){
+//       console.log('You hit an error');
+//       console.log(err);
+//     } else {
+//       console.log('The newly created campground');
+//       console.log(newCampground);
+//     }
+// });
+
+
 
 app.get('/', function(req, res){
   res.render('landing')
 });
 
+// INDEX - Display all campgrounds
 app.get('/campgrounds', function(req, res){
-  res.render('campgrounds', {campgrounds: campgrounds});
+  Campground.find({}, function(err, allCampgrounds){
+    if(err){
+      console.log(err);
+    } else {
+      res.render('index', {campgrounds: allCampgrounds});
+    }
+  });
 });
 
+// CREATE - Add new campground to db
 app.post('/campgrounds', function(req, res){
-  // get data from form and add to campgrounds array
   var name = req.body.name;
   var image = req.body.image;
-  // push the name and image as a campground object!
-  var newCampground = {name: name, image: image};
-  campgrounds.push(newCampground);
-  // redirect back to campgrounds page - defaults to GET request
-  res.redirect('/campgrounds');
+  var description = req.body.description;
+  var newCampground = {name: name, image: image, description: description};
+  Campground.create(newCampground, function(err, newCampground){
+    if(err){
+      console.log(err);
+    } else {
+      res.redirect('/campgrounds');
+    }
+  });
 });
 
+// NEW - Displays the form to create a new campground
 app.get('/campgrounds/new', function(req, res){
   res.render('new.ejs');
 });
+
+// SHOW - shows more info about one campground
+app.get('/campgrounds/:id', function(req, res){
+  // find the campground with provided ID
+  Campground.findById(req.params.id, function(err, foundCampground){
+    if(err){
+      console.log('You hit an error');
+      console.log(err);
+    } else {
+      // render show template with that campground
+      res.render('show', {campground: foundCampground});
+    }
+  });
+});
+
 
 app.listen(3000, function(){
   console.log('The Yelp Camp Server has started');
