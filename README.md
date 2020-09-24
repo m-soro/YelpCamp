@@ -312,7 +312,7 @@
 
   - Add a show route/template
 
-  - Index and Show are two read routes
+  - **Index** and **Show** are two **read** routes
 
   - SHOW route, to display the individual details about a campground. We'll add a link to the campgrounds cards. That when clicked should take us to SHOW page.
 
