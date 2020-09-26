@@ -1,4 +1,6 @@
-# YELP CAMP V1
+# YELP CAMP
+
+## YELP CAMP V1
 
 * Add Landing Page
 * Add Campgrounds Page that lists all Campgrounds
@@ -10,14 +12,14 @@
   * Image
       - `<img src="<%= camp.image %>" alt="">` *notice that ejs tags are inside the* `<img src=" "`.
 
-# Layout and Basic Stylings
+## Layout and Basic Stylings
 
 * Create header/footer inside views/partials/ directory
     - `<%- include ('partials/header') %>` syntax for linking the header and footers.
 * Add in Bootstrap
     - inside the head add the bootrap cdn.
 
-# Creating New Campgrounds
+## Creating New Campgrounds
 
 * Set up new campgrounds POST Route
     - following the REST convention...
@@ -54,7 +56,7 @@
     - fix header with `jumbotron`.
     - stick everything inside `<div class="container">` to give it white space around the sides and any sections that needs whitespace.
 
-# Style the campgrounds page
+## Style the campgrounds page
   - Add a better header/title
   - Make campgrounds display in a grid
     - Bootstrap classes used:
@@ -65,7 +67,7 @@
       `thumbnail`
       `caption`
 
-# Style the Navbar and Form
+## Style the Navbar and Form
     - Add a navbar to all templates
       - Bootstrap classes used:
         `navbar navbar-default`
@@ -75,7 +77,7 @@
         `collapse navbar-collapse`
         `nav navbar-nav navbar-right`
 
-# Style the new campground form
+## Style the new campground form
       - Bootstrap classes used:
         `form-group`
         `form-control`
@@ -83,9 +85,9 @@
         `row`
         `btn-block`
 
-# Databases
+## Databases
 
-# Intro to Databases
+## Intro to Databases
 
 * What is a database?
   - A collection of information/data.
@@ -101,12 +103,12 @@
   - Looks like a javascript object! Bunch of key value pairs.  
   - `bson` - *binary javascript notation*
 
-# Intro to MongoDB
+## Intro to MongoDB
   * What is Mongo
     - A NoSQL database.
     - Make a separate database for every app
 
-# Our First Mongo Commands
+## Our First Mongo Commands
   * `mongod` - starts the mongo demon runs in the background.
   * `mongo` - go to your data directory and run this command. Use to debug just like javascript console. *Quit* using `ctrl c`
   * `help`
@@ -116,7 +118,7 @@
       - won't show up until there's data in it.
       - `show collections` shows dogs
 
-# Mongo's CRUD - Create Read Update Destroy
+## Mongo's CRUD - Create Read Update Destroy
 
   * `insert`
       - add things using collection i.e. `db.dogs.insert({name:'Rusty', breed:'Mutt'})` automatically creates dogs collection.
@@ -128,7 +130,7 @@
   * `remove`
       - `db.dogs.remove({breed:'Poodle'})` or add a limit on how many to remove `db.dogs.remove({breed:'Poodle'}).limit(1)`
 
-# Intro to Mongoose      
+## Intro to Mongoose      
 
   * What is Mongoose?
     - ODM object data mapper allows us write javascript file that interacts with database.
@@ -234,7 +236,7 @@
             }
           });
           ```
-# YELP CAMP V2
+## YELP CAMP V2
 
 * Style the campgrounds Page
   - add a better header/title
@@ -337,7 +339,7 @@
   - Add description to our campground model
   - Show `db.<collection>.drop()` deletes the whole collection in mongo
 
-# Intro to REST
+## Intro to REST
 
 **REST**
   - A mapping between HTTP and CRUD
@@ -351,7 +353,7 @@
 
   - Representational State Transfer
 
-# RESTful Routing
+## RESTful Routing
   - Define REST and explain WHY it matters
   - List all 7 RESTful routes
   - Show example of RESTful routing in practice
@@ -366,3 +368,151 @@
 | EDIT    	| /dogs/:id/edit 	| GET    	| Show edit form for one dog             	|
 | UPDATE  	| /dogs/:id      	| PUT    	| Update a particular dog then, redirect 	|
 | DESTROY 	| /dogs/:id      	| DELETE 	| Delete a particular dog then, redirect 	|
+
+## Refactor Mongoose Code
+* Create a models directory
+  - to check if its working, run the app to see if campgrounds shows up.
+
+* Use model.exports
+  - move the campground schema to `models/campground.js`
+  ```
+  var mongoose = require('mongoose');
+
+  // SCHEMA setup
+  var Schema = mongoose.Schema;
+  var campgroundSchema = new Schema({
+    name: String,
+    image: String,
+    description: String
+  });
+
+  module.exports = mongoose.model('Campground', campgroundSchema);
+  ```
+* Require everything correctly
+- ` var Campground = require('./models/campground')`
+
+## Add Seeds File
+  * Add a seeds.js file at the root folder. Require mongoose in seeds.js
+    ```
+    var mongoose = require("mongoose");
+    var Campground = require("./models/campground");
+    var Comment   = require("./models/comment");
+    ```
+    - we also want to require this function to app.js!
+      `seedDB = require('./seeds')` and
+    - run this function every time we start our server put it in the very top.
+      `seedDb();`
+
+  * Run the seeds file every time the server starts
+    - need to wipe everything in our database.
+    ```
+    var data = [
+        {
+            name: "Cloud's Rest",
+            image: "https://farm4.staticflickr.com/3795/10131087094_c1c0a1c859.jpg",
+            description: "Lorem ipsum dolor sit amet, consectetur"
+        },
+        {
+            name: "Desert Mesa",
+            image: "https://farm6.staticflickr.com/5487/11519019346_f66401b6c1.jpg",
+            description: "Lorem ipsum dolor sit amet, consectetur"
+        },
+        {
+            name: "Canyon Floor",
+            image: "https://farm1.staticflickr.com/189/493046463_841a18169e.jpg",
+            description: "Lorem ipsum dolor sit amet, consectetur"
+        }
+    ]
+
+    function seedDB(){
+
+       // 1. REMOVE ALL CAMPGROUNDS
+       Campground.deleteMany({}, function(err){
+            if(err){
+                console.log(err);
+            }
+            console.log("removed campgrounds!");
+            Comment.deleteMany({}, function(err) {
+                if(err){
+                    console.log(err);
+                }
+                console.log("removed comments!");
+
+                // 2. LOOP THRU THE DATA - USING forEach, SEED REPRESENTS ONE DATA
+                data.forEach(function(seed){
+                    Campground.create(seed, function(err, campground){
+                        if(err){
+                            console.log(err)
+                        } else {
+                            console.log("added a campground");
+
+                            // 3. CREATE A COMMENT FOR THAT ONE CAMPGROUND, ALL CAMPGROUND WILL HAVE THE SAME COMMENT
+                            Comment.create(
+                                {
+                                    text: "This place is great, but I wish there was internet",
+                                    author: "Homer"
+                                }, function(err, comment){
+                                    if(err){
+                                        console.log(err);
+                                    } else {
+
+                                        // 4. ASSOCIATE THE COMMENT TO THE CAMPGROUND
+                                        // PUSH IT TO THE COMMENTS ARRAY ON THE CAMPGROUND
+                                        campground.comments.push(comment);
+                                        campground.save();
+                                        console.log("Created new comment");
+                                    }
+                                });
+                        }
+                    });
+                });
+            });
+        });
+        //add a few comments
+    }
+
+    module.exports = seedDB;
+    ```
+## Add the Comment model  
+  * Make the errors go away
+    - currently in this stage declared comments and require comments and we created comment which is doesn't exist yet.
+    - if we run the app, it says:
+```
+    internal/modules/cjs/loader.js:968
+  throw err;
+  ^
+
+Error: Cannot find module './models/comment'
+```  
+
+  *Let's fix it!*
+    - `touch models/comment.js`
+    - proceed with the schema and model setup(model is always singular form).
+    ```
+    var mongoose = require('mongoose');
+
+    // SCHEMA setup
+    var Schema = mongoose.Schema;
+    var campgroundSchema = new Schema({
+      name: String,
+      image: String,
+      description: String
+    });
+
+    module.exports = mongoose.model('Campground', campgroundSchema);
+    ```  
+    - if we check our database, we'll have the campgrounds and the comments created but, they are not associated with each other.
+
+  *Let's asscosiate a comment to a campground*
+    - We need to add the comments property to the campground.js campground Schema.
+    ```
+    comments:[
+      {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Comment'
+      }
+    ]
+    ```
+    - We're saying that comments property should be an array of comment ids. We're not embedding comments, we are embedding object id references for comments array.
+
+  * Display comments on campground show page
