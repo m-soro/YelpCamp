@@ -486,9 +486,9 @@ Error: Cannot find module './models/comment'
 ```  
 
 *Let's fix it!*
-    - `touch models/comment.js`
-    - proceed with the schema and model setup(model is always singular form).
-    - if we check our database, we'll have the campgrounds and the comments created but, they are not associated with each other.
+  - `touch models/comment.js`
+  - proceed with the schema and model setup(model is always singular form).
+  - if we check our database, we'll have the campgrounds and the comments created but, they are not associated with each other.
 
     ```
     var mongoose = require('mongoose');
