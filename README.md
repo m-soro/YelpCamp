@@ -485,10 +485,10 @@
 Error: Cannot find module './models/comment'
 ```  
 
-  *Let's fix it!*
+*Let's fix it!*
     - `touch models/comment.js`
     - proceed with the schema and model setup(model is always singular form).
-    ```
+```
     var mongoose = require('mongoose');
 
     // SCHEMA setup
@@ -500,19 +500,32 @@ Error: Cannot find module './models/comment'
     });
 
     module.exports = mongoose.model('Campground', campgroundSchema);
-    ```  
+```  
     - if we check our database, we'll have the campgrounds and the comments created but, they are not associated with each other.
 
-  *Let's asscosiate a comment to a campground*
+*Let's asscosiate a comment to a campground*
     - We need to add the comments property to the campground.js campground Schema.
-    ```
+```
     comments:[
       {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Comment'
       }
     ]
-    ```
+```
     - We're saying that comments property should be an array of comment ids. We're not embedding comments, we are embedding object id references for comments array.
+    - If we check in our database, we'll see that each campground has associated comment which is an object id reference
+```
+    {
+	"_id" : ObjectId("5f6f7bfa6820503e443ee932"),
+	"comments" : [
+		ObjectId("5f6f7bfa6820503e443ee935")
+	],
+	"name" : "Canyon Floor",
+	"image" : "https://farm1.staticflickr.com/189/493046463_841a18169e.jpg",
+	"description" : "Lorem ipsum dolor sit amet, consectetur adipisicing",
+	"__v" : 1
+}
 
+```
   * Display comments on campground show page
