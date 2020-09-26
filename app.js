@@ -1,22 +1,27 @@
 var express = require('express'),
     app = express(),
     bodyParser = require('body-parser')
-    mongoose = require('mongoose')
+    mongoose = require('mongoose'),
+    Campground = require('./models/campground')
+    seedDb = require('./seeds')
+    // User = require('./models/user')
 
+seedDb();
 mongoose.connect('mongodb://localhost/yelp_camp',
 {useNewUrlParser:true, useUnifiedTopology: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 
 // SCHEMA setup
-var Schema = mongoose.Schema;
-var campgroundSchema = new Schema({
-  name: String,
-  image: String,
-  description: String
-});
+// commented since were using models
 
-var Campground = mongoose.model('Campground', campgroundSchema);
+// var Schema = mongoose.Schema;
+// var campgroundSchema = new Schema({
+//   name: String,
+//   image: String,
+//   description: String
+// });
+// var Campground = mongoose.model('Campground', campgroundSchema);
 
 // Campground.create(
 //   {
