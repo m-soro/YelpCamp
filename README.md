@@ -518,7 +518,6 @@ Error: Cannot find module './models/comment'
   ```
 
   - We're saying that comments property should be an array of comment ids. We're not embedding comments, we are embedding object id references for comments array.
-
   - If we check in our database, we'll see that each campground has associated comment which is an object id reference
 
   ```
@@ -534,4 +533,22 @@ Error: Cannot find module './models/comment'
   }
 
   ```
+
+  - each comment will have a different object id even though its the same comment over and over again.
+
   * Display comments on campground show page
+    - In our Show route we need to change this code:
+    ```
+    Campground.findById(req.params.id, function(err, foundCampground)
+    ```
+
+    to this:
+
+    ```
+    Campground.findById(req.params.id).populate('comments').exec(function(err, foundCampground))
+    ```
+    - If you run into the Cannot read property 'name' of null  error, it's because now that we have the seeds function in app.js the campgrounds get deleted and recreated every time we start or restart the app.
+    - This means that, although they look the same, each campground has a brand new id in the database.
+    - If you want to avoid this error then you can either, comment out seedDB() in app.js or just be sure to go back to the campgrounds index page before going to any of the show pages.
+
+    
