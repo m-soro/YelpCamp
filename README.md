@@ -551,4 +551,58 @@ Error: Cannot find module './models/comment'
     - This means that, although they look the same, each campground has a brand new id in the database.
     - If you want to avoid this error then you can either, comment out seedDB() in app.js or just be sure to go back to the campgrounds index page before going to any of the show pages.
 
-    
+## Comment New/Create
+
+    * Discuss nested routes
+      - Since comments are connected to a specific campground we have to nest it to an existing route like below.
+      ```
+      /campgrounds/:id/comments/new
+      ```
+      - In our views folder, we've split up the campground and comments route. We made two folder for both, we moved `new.ejs`, `index.ejs` and `show.ejs` inside the the campground folder.
+      - now update the render form to `res.render('comments/new')` and do the same for `campgrounds/new /index /show`.
+      - make sure to update the the includes code since we moved the `new.ejs`, `show.ejs` and `index.ejs`. like this, `'../partials/header'`
+
+    * Add the comment and create routes
+      ```
+      app.get('/campgrounds/:id/comments/new', function(req, res){
+        // find campground by id
+        Campground.findById(req.params.id, function(err, campground){
+          if(err){
+            console.log(err);
+          } else {
+            // render the comments/new and pass the found campground in that form
+            res.render('comments/new', {campground: campground});
+          }
+        });
+      });
+      ```
+
+    * Add the new comment form
+      - In `comments/new.ejs` we basically just copied the form from our `campgrounds/new.ejs`
+      - Let's use ejs to pass in values from the campground object and change the `action` route to the specific `<%= campground._id %>` and since this is comments we'll add `/comments`
+      - `Add New Comment to <%= campground.name %>`
+      - `action="/campgrounds/<%= campground._id %>/comments"`
+      - Looking at the the REST Table `new` form has to submit to `/campgrounds/:id/comments`which is what we did up here.
+      - in `name="comment[text]` instead of just `name` and `author` we had name and uthor nested inside the comment.
+
+      ```
+      <div class="container">
+        <div class="row">
+          <h1 style="text-align: center;">Add New Comment to <%= campground.name %> </h1>
+          <div style="width:30%; margin:30px auto;">
+            <form class="" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+              <div class="form-group">
+                <input class="form-control" type="text" name="comment[text]" placeholder="Text">
+              </div>
+              <div class="form-group">
+                <input class="form-control"type="text" name="comment[author]" placeholder="Author">
+              </div>
+              <div class="form-group">
+                  <button class="btn btn-lg btn-default btn-block btn-primary"type="submit" name="button">Submit!</button>
+              </div>
+            </form>
+              <a href="/campgrounds">Back</a>
+          </div>
+        </div>
+      </div>
+      ```
