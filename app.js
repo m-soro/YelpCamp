@@ -2,7 +2,8 @@ var express = require('express'),
     app = express(),
     bodyParser = require('body-parser')
     mongoose = require('mongoose'),
-    Campground = require('./models/campground')
+    Campground = require('./models/campground'),
+    Comment = require('./models/comment'),
     seedDb = require('./seeds')
 
 
@@ -90,11 +91,15 @@ app.get('/campgrounds/:id', function(req, res){
   });
 });
 
+// ================
 // COMMENTS ROUTES
+// ================
+
+// NEW - Show the form to create new comment
 app.get('/campgrounds/:id/comments/new', function(req, res){
   // find campground by id
   Campground.findById(req.params.id, function(err, campground){
-    if(err){
+    if(err) {
       console.log(err);
     } else {
       // render the comments/new and pass the found campground in that form
@@ -102,6 +107,33 @@ app.get('/campgrounds/:id/comments/new', function(req, res){
     }
   });
 });
+
+// CREATE - the actual maker of the comment - this is where the new form submits!
+app.post('/campgrounds/:id/comments', function(req, res){
+  // look up campground using ID
+  Campground.findById(req.params.id, function(err, campground){
+    if(err) {
+      console.log(err);
+      res.redirect('/campgrounds');
+    } else {
+      console.log(req.body.comment);
+      // create new comment
+      Comment.create(req.body.comment, function(err, comment){
+        if(err) {
+          console.log(err);
+        } else {
+        // associate new comment to campground
+        campground.comments.push(comment);
+        // save the comment to the campground model
+        campground.save();
+        // redirect to that campground show page
+        res.redirect('/campgrounds/' + campground._id);
+        }
+      });
+    }
+  });
+});
+
 
 app.listen(3000, function(){
   console.log('The Yelp Camp Server has started');

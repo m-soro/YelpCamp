@@ -555,7 +555,7 @@ Error: Cannot find module './models/comment'
 
   * Discuss nested routes
     - Since comments are connected to a specific campground we have to nest it to an existing route like below.
-    
+
       ```
       /campgrounds/:id/comments/new
       ```
@@ -563,9 +563,11 @@ Error: Cannot find module './models/comment'
     - now update the render form to `res.render('comments/new')` and do the same for `campgrounds/new /index /show`.
     - make sure to update the the includes code since we moved the `new.ejs`, `show.ejs` and `index.ejs`. like this, `'../partials/header'`
 
-  * Add the comment and create routes
+  * Add the new and create routes
 
-    ```
+    **NEW Route** which displays the form
+
+  ```
       app.get('/campgrounds/:id/comments/new', function(req, res){
         // find campground by id
         Campground.findById(req.params.id, function(err, campground){
@@ -577,15 +579,68 @@ Error: Cannot find module './models/comment'
           }
         });
       });
-    ```
+  ```
+
+    **CREATE Route** which makes the actual comment
+
+```
+  app.post('/campgrounds/:id/comments', function(req, res){
+    // look up campground using ID
+    Campground.findById(req.params.id, function(err, campground){
+      if(err) {
+        console.log(err);
+        res.redirect('/campgrounds');
+      } else {
+        console.log(req.body.comment);
+        // create new comment
+        Comment.create(req.body.comment, function(err, comment){
+          if(err) {
+            console.log(err);
+          } else {
+          // associate new comment to campground
+          campground.comments.push(comment);
+          // save the comment to the campground model
+          campground.save();
+          // redirect to that campground show page
+          res.redirect('/campgrounds/' + campground._id);
+          }
+        });
+      }
+    });
+  });
+```
 
   * Add the new comment form
       - In `comments/new.ejs` we basically just copied the form from our `campgrounds/new.ejs`
-      - Let's use ejs to pass in values from the campground object and change the `action` route to the specific `<%= campground._id %>` and since this is comments we'll add `/comments`
+
+      - Let's use ejs to pass in values from the campground object and change the `action` route to the specific `<%= campground._id %>` and following the REST convention we'll `/comments` to write this route.
+
       - `Add New Comment to <%= campground.name %>`
+
       - `action="/campgrounds/<%= campground._id %>/comments"`
-      - Looking at the the REST Table `new` form has to submit to `/campgrounds/:id/comments`which is what we did up here.
-      - in `name="comment[text]` instead of just `name` and `author` we had name and uthor nested inside the comment.
+
+      - Looking at the the REST Table `new` form has to submit to `/campgrounds/:id/comments` which is what we did up here.
+
+      - in `name="comment[text]` and `name="comment[author]`instead of just `text` and `author` we had `text` and `author` nested inside the comment.
+
+      - if we console.log it will show up as this `{ text: 'Great Camping Site', author: 'Alex' }` they are nested inside comment and **we can access this with** `req.body.comment`
+
+      - We don't have to declare variables and create an object like what we did in the `create` campground route
+    ```
+      var name = req.body.name;
+      var image = req.body.image;
+      var description = req.body.description;
+      var newCampground = {name: name, image: image, description: description};
+      Campground.create(newCampground, function(err, newCampground){
+        if(err){
+          console.log(err);
+        } else {
+          res.redirect('/campgrounds');
+        }
+      });
+    });
+    ```  
+      - And the new comment form
 
     ```
       <div class="container">
@@ -608,3 +663,5 @@ Error: Cannot find module './models/comment'
         </div>
       </div>
     ```
+  - **Don't forget to require the comment model!**
+  
