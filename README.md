@@ -742,4 +742,21 @@ Error: Cannot find module './models/comment'
 
 ## Add User Model
   * Install all packages needed for Auth
+  ```
+    npm install --save passport passport-local passport-local-mongoose express-session
+  ```
   * Define User model
+  ```
+    var mongoose = require('mongoose');
+    var passportLocalMongoose = require('passport-local-mongoose');
+
+    // Schema set up
+    var userSchema = new mongoose.Schema({
+      username: String,
+      password: String
+    });
+
+    userSchema.plugin(passportLocalMongoose);
+
+    module.exports = mongoose.model('User', userSchema);
+  ```
