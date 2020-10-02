@@ -1,17 +1,26 @@
-var express = require('express'),
-    app = express(),
-    bodyParser = require('body-parser')
-    mongoose = require('mongoose'),
-    Campground = require('./models/campground'),
-    Comment = require('./models/comment'),
-    seedDb = require('./seeds')
+var express               = require('express'),
+    app                   = express(),
+    bodyParser            = require('body-parser')
+    mongoose              = require('mongoose'),
+    Campground            = require('./models/campground'),
+    Comment               = require('./models/comment'),
+    User                  = require('./models/user'),
+    seedDb                = require('./seeds'),
+    passport              = require('passport'),
+    LocalStrategy         = require('passport-local'),
+    passportLocalMongoose = require('passport-local-mongoose'),
+    session               = require('express-session')
 
 
 seedDb();
+
 mongoose.connect('mongodb://localhost/yelp_camp',
 {useNewUrlParser:true, useUnifiedTopology: true});
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
 
 // SCHEMA setup
 // commented since were using models

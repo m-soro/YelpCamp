@@ -553,6 +553,15 @@ Error: Cannot find module './models/comment'
 
 ## Comment New/Create
 
+| ROUTE NAME | PATH                          | VERB |
+|------------|-------------------------------|------|
+| INDEX      | /campgrounds                  |      |
+| CREATE     | /campgrounds/new              |      |
+| SHOW       | /campgrounds/:id              |      |
+|            |                               |      |
+| NEW        | /campgrounds/:id/comments/new | GET  |
+| CREATE     | /campgrounds/:id/comments     | POST |
+
   * Discuss nested routes
     - Since comments are connected to a specific campground we have to nest it to an existing route like below.
 
@@ -664,4 +673,73 @@ Error: Cannot find module './models/comment'
       </div>
     ```
   - **Don't forget to require the comment model!**
-  
+
+  - add a link to create a new comment in the show page
+    ```
+    <p>
+      <a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add New Comment</a>
+    </p>
+    ```
+## Recap
+
+| ROUTE NAME | PATH                          | VERB |
+|------------|-------------------------------|------|
+| INDEX      | /campgrounds                  |      |
+| CREATE     | /campgrounds/new              |      |
+| SHOW       | /campgrounds/:id              |      |
+|            |                               |      |
+| NEW        | /campgrounds/:id/comments/new | GET  |
+| CREATE     | /campgrounds/:id/comments     | POST |
+
+* In `NEW` route, we added the comment after the campground, because a comment is dependent on a campground's particular id.
+
+* We separated our campgrounds model and comments model inside our views folder. We used module.export and required it on our app.
+
+* Changed the path on our partials - header and footer.
+
+* We created `NEW` comment and `CREATE` comment route.
+  * We both have to look for the correct campground first `Campground.findById`
+  * In `NEW` - we render the form.
+  * IN `CREATE` - we create the comment, push it to the campground model, save then redirect to that campground's show page.
+
+## Styling the SHOW PAGE
+  * Add sidebar to the show page
+  * Display comments nicely
+
+  - enclose everything in show page with `div container`
+  - side bar is inside `<div class="col-md-3">`
+  - list item is inside `list-group`, actual list is `list-group-item`
+
+  - second half of the page is enclosed in `<div class="col-md-9">`
+  - image is enclosed in `<div class="thumbnail">` with a class of `<img class="img-responsive"`
+  - all info is enclosed in `<div class="caption-full">`
+  - to put price on the right side add class `<h4 class="pull-right"`
+  - campground name is an h4 same as the price and enclosed in a an anchor tag for more info.
+  - comments are enclosed in `<div class="well">`
+  - add the leave review button inside the `<div class="text-right">`
+  - loop the comments in separate rows taking up the full width(col-md-12) of col-md-9.
+  ```
+    <div class="row">
+      <div class="col-md-12">
+        <strong><%= comment.author %></strong>
+        <span class="pull-right">10 days ago</span>
+        <p>
+          <%= comment.text %>
+        </p>
+      </div>
+    </div>
+  ```
+  - add space in between the add comment button and the comments `<hr>`.
+
+  - We'll set the `<div class="thumbnail">` to `padding:0` and `.thumbnail img`  select the image inside the thumbnail class to `width: 100%` this will make the image full width of the container and the `padding:0` will eliminate the gaps all around the image.
+
+  - add `padding:9px` to `<div class="caption-full">` to give the caption spacing.
+
+  *Let's add custom stylesheet to fix the above styling issues.*
+  - `mkdir public` inside it `mkdir stylesheets` inside it `main.css`.
+  - don't forget to add in the app.js `app.use(express.static('public'));`
+  - Link it to the `header.ejs`, `href="/stylesheets/main.css">`
+
+## Add User Model
+  * Install all packages needed for Auth
+  * Define User model
