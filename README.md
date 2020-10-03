@@ -740,7 +740,7 @@ Error: Cannot find module './models/comment'
   - don't forget to add in the app.js `app.use(express.static('public'));`
   - Link it to the `header.ejs`, `href="/stylesheets/main.css">`
 
-## Add User Model
+## Auth Pt 1 - Add User Model
   * Install all packages needed for Auth
   ```
     npm install --save passport passport-local passport-local-mongoose express-session
@@ -760,3 +760,65 @@ Error: Cannot find module './models/comment'
 
     module.exports = mongoose.model('User', userSchema);
   ```
+## Auth Pt 2 - Register
+  * Configure Passport
+    ```
+      // PASSPORT CONFIGURATION
+
+      app.use(require('express-session')({
+        secret: 'juicy hotdogs',
+        resave: false,
+        saveUnintialized: false
+      }));
+      app.use(passport.initialize());
+      app.use(passport.session());
+      passport.use(new LocalStrategy(User.authenticate()));
+      passport.serializeUser(User.serializeUser());
+      passport.deserializeUser(User.deserializeUser());
+    ```
+  * Add register routes
+  ```
+      // SHOW register form
+      app.get('/register', function(req, res){
+        res.render('register');
+      });
+
+      // CREATE - handle sign up logic
+      app.post('/register', function(req, res){
+        // res.send('Signing you up'); JUST TESTING
+
+       // clean up the coed a bit...
+        var newUser = new User({username: req.body.username});
+        User.register(newUser, req.body.password, function(err, user){
+          if(err) {
+            console.log(err);
+            return res.render('register');
+          }
+          passport.authenticate('local')(req, res, function(){
+            res.redirect('/campgrounds')
+          });
+        });
+      });
+  ```
+  *if you register the same username twice*
+  ```
+    [UserExistsError]: A user with the given username is already registered
+    at /Users/marksoro/git-projects/IntroToNode/YelpCamp/node_modules/passport-local-mongoose/index.js:237:17
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  ```
+  *passport will complain we can use this to show the message to the user*
+
+  * Add register template
+  ```
+    <h1>SIGN UP</h1>
+
+    <form class="" action="/register" method="POST">
+      <input type="text" name="username" placeholder="username">
+      <input type="password" name="password" placeholder="password">
+      <button type="submit">Submit!</button>
+    </form>
+  ```
+## Auth Pt 3 - Log In
+  * Add login routes
+  * Add login template
