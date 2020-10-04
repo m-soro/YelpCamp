@@ -787,7 +787,7 @@ Error: Cannot find module './models/comment'
       app.post('/register', function(req, res){
         // res.send('Signing you up'); JUST TESTING
 
-       // clean up the coed a bit...
+       // clean up the code a bit...
         var newUser = new User({username: req.body.username});
         User.register(newUser, req.body.password, function(err, user){
           if(err) {
@@ -821,4 +821,34 @@ Error: Cannot find module './models/comment'
   ```
 ## Auth Pt 3 - Log In
   * Add login routes
+  ```
+    // CREATE - HANDLES THE LOG IN LOGIC
+    // MIDDLEWARE - SITS BETWEEN THE BEGINNING AND BEFORE THE END OF THE ROUTE
+    // passport.authenticate - CHECKS THE CREDENTIALS. IT AUTHENTICATES
+    // WILL TAKE THE USERNAME AND PASSWORD INSIDE request.body THEN WE PROVIDE AN OBJECT
+    // WITH TWO OPTIONS: SUCCESS AND FAILURE
+    app.post('/login', passport.authenticate('local',
+      {
+          successRedirect: '/campgrounds',
+          failureRedirect: '/login'
+      }), function(req, res){
+
+    });
+
+  ```
   * Add login template
+  ```
+    // SHOW LOGIN FORM
+    app.get('/login', function(req, res){
+      res.render('login');
+    });
+  ```
+
+  ```
+    <h1>LOG IN</h1>
+    <form class="" action="/login" method="POST">
+      <input type="text" name="username" placeholder="username">
+      <input type="text" name="password" placeholder="password">
+      <input type="submit" value="Submit">
+    </form>
+  ```

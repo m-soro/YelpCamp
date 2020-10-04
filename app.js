@@ -160,29 +160,45 @@ app.post('/campgrounds/:id/comments', function(req, res){
 // AUTH ROUTES
 //==============
 
-// SHOW register form
+// SHOW REGISTER FORM
 app.get('/register', function(req, res){
   res.render('register');
 });
 
-// CREATE - handle sign up logic
+// CREATE - handle REGISTER logic
 app.post('/register', function(req, res){
   // res.send('Signing you up'); JUST TESTING
+  // newUser IS JUST THE USER'S USERNAME
   var newUser = new User({username: req.body.username});
+  // User.register TAKES THE USER'S USERNAME THEN STORES THE PASSWORD IN A HASH FORM
   User.register(newUser, req.body.password, function(err, user){
     if(err) {
       console.log(err);
       return res.render('register');
     }
+    // IF ALL WORKS THEN passport.authenticate WILL LOG THE USER IN
     passport.authenticate('local')(req, res, function(){
       res.redirect('/campgrounds')
     });
   });
 });
 
-// SHOW login form
+// SHOW LOGIN FORM
 app.get('/login', function(req, res){
   res.render('login');
+});
+
+// CREATE - HANDLES THE LOG IN LOGIC
+// MIDDLEWARE - SITS BETWEEN THE BEGINNING AND BEFORE THE END OF THE ROUTE
+// passport.authenticate - CHECKS THE CREDENTIALS. IT AUTHENTICATES
+// WILL TAKE THE USERNAME AND PASSWORD INSIDE request.body THEN WE PROVIDE AN OBJECT
+// WITH TWO OPTIONS: SUCCESS AND FAILURE
+app.post('/login', passport.authenticate('local',
+  {
+      successRedirect: '/campgrounds',
+      failureRedirect: '/login'
+  }), function(req, res){
+
 });
 
 
