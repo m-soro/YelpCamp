@@ -33,6 +33,14 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Whatever function we provide this app.use will be run in every route
+app.use(function(req, res, next){
+  // pass the req.use to res.locals.currentUser
+  // whatever is in res.locals is available in all the templates
+  res.locals.currentUser = req.user;
+  // then move to the next code, this is a must
+  next();
+});
 
 
 // SCHEMA setup
@@ -69,11 +77,14 @@ app.get('/', function(req, res){
 
 // INDEX - Display all campgrounds
 app.get('/campgrounds', function(req, res){
+  // console.log(req.user); req.user will contain the id and the username
   Campground.find({}, function(err, allCampgrounds){
     if(err){
       console.log(err);
     } else {
-      res.render('campgrounds/index', {campgrounds: allCampgrounds});
+      // ADDED currentUser: req.user TO USE IN SHOWING/HIDING LINKS DEPENDING IF USER IS LOGGED IN
+      // we can actually get rid of --> currentUser: req.user since we have app.use
+      res.render('campgrounds/index', {campgrounds: allCampgrounds, currentUser: req.user});
     }
   });
 });
@@ -118,7 +129,7 @@ app.get('/campgrounds/:id', function(req, res){
 // ================
 
 // NEW - Show the form to create new comment
-app.get('/campgrounds/:id/comments/new', function(req, res){
+app.get('/campgrounds/:id/comments/new', isLoggedIn, function(req, res){
   // find campground by id
   Campground.findById(req.params.id, function(err, campground){
     if(err) {
@@ -131,7 +142,7 @@ app.get('/campgrounds/:id/comments/new', function(req, res){
 });
 
 // CREATE - the actual maker of the comment - this is where the new form submits!
-app.post('/campgrounds/:id/comments', function(req, res){
+app.post('/campgrounds/:id/comments', isLoggedIn, function(req, res){
   // look up campground using ID
   Campground.findById(req.params.id, function(err, campground){
     if(err) {
@@ -201,6 +212,22 @@ app.post('/login', passport.authenticate('local',
 
 });
 
+// LOG OUT ROUTE
+app.get('/logout', function(req, res){
+  // passport COMES WITH logout() method
+  req.logout();
+  res.redirect('/campgrounds');
+});
+
+// MIDDLEWARE FOR isLoggedIn function
+function isLoggedIn(req, res, next){
+  // CHECK IF isAuthenticated (COMES WITH PASSPORT),
+  if(req.isAuthenticated()){
+    // IF YES, RUN THE NEXT STEP
+    return next();
+  } // IF NOT, REDIRECT TO LOGIN AGAIN
+  res.redirect('/login')
+}
 
 app.listen(3000, function(){
   console.log('The Yelp Camp Server has started');
