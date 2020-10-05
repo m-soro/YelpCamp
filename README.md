@@ -836,7 +836,7 @@ Error: Cannot find module './models/comment'
     });
 
   ```
-  * Add login template
+  * Add log in template
   ```
     // SHOW LOGIN FORM
     app.get('/login', function(req, res){
@@ -852,3 +852,71 @@ Error: Cannot find module './models/comment'
       <input type="submit" value="Submit">
     </form>
   ```
+## Auth Pt 4 - Log out/Navbar
+  * Add log out route
+```
+  // LOG OUT ROUTE
+  app.get('/logout', function(req, res){
+    // passport COMES WITH logout() method
+    req.logout();
+    res.redirect('/campgrounds');
+  });
+```
+  * Prevent user from adding a comment if not signed in
+```
+  // MIDDLEWARE FOR isLoggedIn function
+  function isLoggedIn(req, res, next){
+    // CHECK IF isAuthenticated (COMES WITH PASSPORT),
+    if(req.isAuthenticated()){
+      // IF YES, RUN THE NEXT STEP
+      return next();
+    } // IF NOT, REDIRECT TO LOGIN AGAIN
+    res.redirect('/login')
+  }
+```
+  *Add* `isLoggedIn` *to all the the routes that we need to hide from the user. Not just the new comment* `NEW ROUTE` *form but also to the route that creates the comment* `CREATE ROUTE`.
+  * Add links to navbar
+```
+  <li><a href="/login">Login</a></li>
+  <li><a href="/register">Sign up</a></li>
+  <li><a href="/logout">Logout</a></li>
+```
+
+## Auth Pt 5 - Show/hide auth links
+  * Show/hide auth links in navbar correctly
+```
+    // INDEX - Display all campgrounds
+    app.get('/campgrounds', function(req, res){
+      // console.log(req.user); req.user will contain the id and the username
+      Campground.find({}, function(err, allCampgrounds){
+        if(err){
+          console.log(err);
+        } else {
+          // ADDED currentUser: req.user TO USE IN SHOWING/HIDING LINKS DEPENDING IF USER IS LOGGED IN
+          res.render('campgrounds/index', {campgrounds: allCampgrounds, currentUser: req.user});
+        }
+      });
+    });
+```
+  - at this point only the `/campgrounds` has access to `currentUser`. We can have have this variable available to every route by adding an `app.use` middleware:
+```
+  // Whatever function we provide this app.use will be run in every route
+  app.use(function(req, res, next){
+
+    // pass the req.use to res.locals.currentUser
+    // whatever is in res.locals is available in all the templates
+    res.locals.currentUser = req.user;
+
+    // then move to the next code, this is a must
+    next();
+  });
+```  
+  - update the show/hide nav bar and show who's signed in
+```
+  <% if(!currentUser) { %>
+  <li><a href="/login">Login</a></li>
+  <li><a href="/register">Sign up</a></li>
+  <% } else { %>
+  <li><a href="#">Signed in as <%= currentUser.username %></a></li>
+  <li><a href="/logout">Logout</a></li>
+```
