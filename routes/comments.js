@@ -1,0 +1,58 @@
+
+var express = require('express');
+var router = express.Router();
+var Campground = require('../models/campground')
+// ================
+// COMMENTS ROUTES
+// ================
+
+// NEW - Show the form to create new comment
+router.get('/campgrounds/:id/comments/new', isLoggedIn, function(req, res){
+  // find campground by id
+  Campground.findById(req.params.id, function(err, campground){
+    if(err) {
+      console.log(err);
+    } else {
+      // render the comments/new and pass the found campground in that form
+      res.render('comments/new', {campground: campground});
+    }
+  });
+});
+
+// CREATE - the actual maker of the comment - this is where the new form submits!
+router.post('/campgrounds/:id/comments', isLoggedIn, function(req, res){
+  // look up campground using ID
+  Campground.findById(req.params.id, function(err, campground){
+    if(err) {
+      console.log(err);
+      res.redirect('/campgrounds');
+    } else {
+      console.log(req.body.comment);
+      // create new comment
+      Comment.create(req.body.comment, function(err, comment){
+        if(err) {
+          console.log(err);
+        } else {
+        // associate new comment to campground
+        campground.comments.push(comment);
+        // save the comment to the campground model
+        campground.save();
+        // redirect to that campground show page
+        res.redirect('/campgrounds/' + campground._id);
+        }
+      });
+    }
+  });
+});
+
+// MIDDLEWARE FOR isLoggedIn function
+function isLoggedIn(req, res, next){
+  // CHECK IF isAuthenticated (COMES WITH PASSPORT),
+  if(req.isAuthenticated()){
+    // IF YES, RUN THE NEXT STEP
+    return next();
+  } // IF NOT, REDIRECT TO LOGIN AGAIN
+  res.redirect('/login')
+}
+
+module.exports = router;
