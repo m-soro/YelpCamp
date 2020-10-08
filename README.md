@@ -36,3 +36,49 @@
   *This tells express to use all our routes -- now just do the same with all our routes!*
 
   **Make sure that required models and functions are added as well!**
+
+  In `router/campgrounds.js`
+  ```
+    var express = require('express');
+    var router = express.Router();
+    var Campground = require('../models/campground');
+
+  ```
+  In `router/comment.js`
+  ```
+    var express = require('express');
+    var router = express.Router();
+    var Campground = require('../models/campground')
+    var Comment = require('../models/comment')
+
+
+  ```
+  In `router/index.js`
+  ```
+    var express = require('express');
+    var router = express.Router();
+    var passport = require('passport');
+    var User = require('../models/user');
+
+  ```
+
+  *We can even dry up our code to reduce duplication in route declaration*
+
+  we're telling all campground routes should start with /campgrounds
+  go to campgrounds route and delete the 'campgrounds' in route declaration
+  ```
+    app.use(commentRoutes);   ---> app.use('/',indexRoutes);
+    app.use(campgroundRoutes);---> app.use('/campgrounds', campgroundRoutes);
+    app.use(indexRoutes);     ---> app.use('/campgrounds/:id/comments',commentRoutes);
+  ```
+In `routes/comments.js`:
+```
+  var express = require('express');
+
+  // mergeParams will merge campgrounds params and comments params together
+  var router = express.Router({mergeParams:true});
+  var Campground = require('../models/campground')
+  var Comment = require('../models/comment')
+
+```
+so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',commentRoutes);` in `app.js`.

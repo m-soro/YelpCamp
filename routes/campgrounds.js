@@ -1,24 +1,25 @@
 var express = require('express');
 var router = express.Router();
 var Campground = require('../models/campground');
-var Comment = require('../models/comment');
+
 
 // INDEX - Display all campgrounds
-router.get('/campgrounds', function(req, res){
+router.get('/', function(req, res){
   // console.log(req.user); req.user will contain the id and the username
   Campground.find({}, function(err, allCampgrounds){
     if(err){
       console.log(err);
     } else {
       // ADDED currentUser: req.user TO USE IN SHOWING/HIDING LINKS DEPENDING IF USER IS LOGGED IN
-      // we can actually get rid of --> currentUser: req.user since we have app.use
+      // we can actually get rid of --> currentUser: req.user since we have app.use in our app.js
+      // just kept it here for reference
       res.render('campgrounds/index', {campgrounds: allCampgrounds, currentUser: req.user});
     }
   });
 });
 
 // CREATE - Add new campground to db
-router.post('/campgrounds', function(req, res){
+router.post('/', function(req, res){
   var name = req.body.name;
   var image = req.body.image;
   var description = req.body.description;
@@ -33,12 +34,12 @@ router.post('/campgrounds', function(req, res){
 });
 
 // NEW - Displays the form to create a new campground
-router.get('/campgrounds/new', function(req, res){
+router.get('/new', function(req, res){
   res.render('campgrounds/new');
 });
 
 // SHOW - shows more info about one campground
-router.get('/campgrounds/:id', function(req, res){
+router.get('/:id', function(req, res){
   // find the campground with provided ID
   Campground.findById(req.params.id).populate('comments').exec(function(err, foundCampground){
     if(err){

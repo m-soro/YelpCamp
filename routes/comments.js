@@ -1,14 +1,15 @@
 
 var express = require('express');
-var router = express.Router();
+// mergeParams will merge campgrounds params and comments params together
+var router = express.Router({mergeParams:true});
 var Campground = require('../models/campground')
-// ================
-// COMMENTS ROUTES
-// ================
+var Comment = require('../models/comment')
+
 
 // NEW - Show the form to create new comment
-router.get('/campgrounds/:id/comments/new', isLoggedIn, function(req, res){
+router.get('/new', isLoggedIn, function(req, res){
   // find campground by id
+  console.log(req.params.id);
   Campground.findById(req.params.id, function(err, campground){
     if(err) {
       console.log(err);
@@ -20,7 +21,7 @@ router.get('/campgrounds/:id/comments/new', isLoggedIn, function(req, res){
 });
 
 // CREATE - the actual maker of the comment - this is where the new form submits!
-router.post('/campgrounds/:id/comments', isLoggedIn, function(req, res){
+router.post('/', isLoggedIn, function(req, res){
   // look up campground using ID
   Campground.findById(req.params.id, function(err, campground){
     if(err) {

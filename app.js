@@ -11,6 +11,7 @@ var express               = require('express'),
     passportLocalMongoose = require('passport-local-mongoose'),
     session               = require('express-session')
 
+// ReQUIRING ROUTES
 var commentRoutes         = require('./routes/comments'),
     campgroundRoutes      = require('./routes/campgrounds'),
     indexRoutes           = require('./routes/index')
@@ -26,7 +27,7 @@ app.use(express.static('public'));
 
 // PASSPORT CONFIGURATION
 app.use(require('express-session')({
-  secret: 'juicy hotdogs',
+  secret: 'Chocolate Torte',
   resave: false,
   saveUnintialized: false
 }));
@@ -42,9 +43,11 @@ app.use(function(req, res, next){
   next();
 });
 
-app.use(indexRoutes);
-app.use(campgroundRoutes);
-app.use(commentRoutes);
+app.use('/',indexRoutes);
+// we're telling all campground routes should start with /campgrounds
+// go to campgrounds route and delete the 'campgrounds' in route declaration
+app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/comments',commentRoutes);
 
 
 
