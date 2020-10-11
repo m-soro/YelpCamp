@@ -34,6 +34,10 @@ router.post('/', isLoggedIn, function(req, res){
         if(err) {
           console.log(err);
         } else {
+        // before we push the comment in to the campground
+        // were going to add the username and id to the comment
+        // console.log('New comment\'s username will be: ' + req.user.username);
+        // console.log('New comment\'s username will be: ' + req.user._id);
         // associate new comment to campground
         campground.comments.push(comment);
         // save the comment to the campground model

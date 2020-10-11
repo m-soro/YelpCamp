@@ -73,12 +73,17 @@
   ```
 In `routes/comments.js`:
 ```
-  var express = require('express');
-
   // mergeParams will merge campgrounds params and comments params together
   var router = express.Router({mergeParams:true});
-  var Campground = require('../models/campground')
-  var Comment = require('../models/comment')
 
 ```
 so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',commentRoutes);` in `app.js`.
+
+## Users + Comments
+  * Associate users and comments
+  * Save author's name to a comment automatically ...
+    - on the comment model we need to add some fields in to store the user's id and the user's name.
+    - we removed all campgrounds then commented out the `seedDb`
+
+*Now let's go in the comments route which creates the actual comment*
+*Remove the author field in* `views/comments/new.ejs`
