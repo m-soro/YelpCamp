@@ -9,7 +9,7 @@ var Comment = require('../models/comment')
 // NEW - Show the form to create new comment
 router.get('/new', isLoggedIn, function(req, res){
   // find campground by id
-  console.log(req.params.id);
+  //console.log(req.params.id);
   Campground.findById(req.params.id, function(err, campground){
     if(err) {
       console.log(err);
@@ -28,7 +28,7 @@ router.post('/', isLoggedIn, function(req, res){
       console.log(err);
       res.redirect('/campgrounds');
     } else {
-      console.log(req.body.comment);
+      // console.log(req.body.comment);
       // create new comment
       Comment.create(req.body.comment, function(err, comment){
         if(err) {
@@ -36,13 +36,17 @@ router.post('/', isLoggedIn, function(req, res){
         } else {
         // before we push the comment in to the campground
         // were going to add the username and id to the comment
-        // console.log('New comment\'s username will be: ' + req.user.username);
-        // console.log('New comment\'s username will be: ' + req.user._id);
+        comment.author.id = req.user._id;
+        comment.author.username = req.user.username;
+        comment.save();
         // associate new comment to campground
         campground.comments.push(comment);
         // save the comment to the campground model
         campground.save();
         // redirect to that campground show page
+        console.log('=====NEW COMMENT=======')
+        console.log(comment);
+        console.log('=======================')
         res.redirect('/campgrounds/' + campground._id);
         }
       });

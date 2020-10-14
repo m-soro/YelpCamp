@@ -82,8 +82,10 @@ so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',comm
 ## Users + Comments
   * Associate users and comments
   * Save author's name to a comment automatically ...
-    - on the comment model we need to add some fields in to store the user's id and the user's name.
+    - on the comment model we need to add some fields in to store the user's id and the user's name by storing an object under author with two properties.
     - we removed all campgrounds then commented out the `seedDb`
 
 *Now let's go in the comments route which creates the actual comment*
 *Remove the author field in* `views/comments/new.ejs`
+
+  - In `route/comment.js` in comment.create let's associate the user to the comment by `comment.author.id = req.user._id` this is following the comment model and associate the user name by `comment.author.username = req.user.username` then `comment.save()`.

@@ -10,13 +10,15 @@ var express               = require('express'),
     LocalStrategy         = require('passport-local'),
     passportLocalMongoose = require('passport-local-mongoose'),
     session               = require('express-session')
+    deleteComment         = require('./delete')
 
 // ReQUIRING ROUTES
 var commentRoutes         = require('./routes/comments'),
     campgroundRoutes      = require('./routes/campgrounds'),
     indexRoutes           = require('./routes/index')
 
-//seedDb(); //seed the database
+// seedDb(); //seed the database
+// deleteComment();
 
 mongoose.connect('mongodb://localhost/yelp_camp',
 {useNewUrlParser:true, useUnifiedTopology: true});
