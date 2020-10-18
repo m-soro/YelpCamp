@@ -9,8 +9,10 @@ var express               = require('express'),
     passport              = require('passport'),
     LocalStrategy         = require('passport-local'),
     passportLocalMongoose = require('passport-local-mongoose'),
-    session               = require('express-session')
-    deleteComment         = require('./delete')
+    session               = require('express-session'),
+    deleteComment         = require('./delete'),
+    methodOverride        = require('method-override')
+
 
 // ReQUIRING ROUTES
 var commentRoutes         = require('./routes/comments'),
@@ -26,6 +28,7 @@ mongoose.connect('mongodb://localhost/yelp_camp',
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(methodOverride("_method")); // recommended
 
 // PASSPORT CONFIGURATION
 app.use(require('express-session')({

@@ -61,6 +61,30 @@ router.get('/:id',isLoggedIn, function(req, res){
   });
 });
 
+// EDIT - Shows the form that let's us edit
+router.get('/:id/edit', function(req, res){
+  Campground.findById(req.params.id, function(err, foundCampground){
+    if(err){
+      res.redirect('/campgrounds');
+    } else {
+      res.render('campgrounds/edit', {campground:foundCampground});
+    }
+  });
+});
+
+// UPDATE - This is where EDIT submits its form
+router.put('/:id', function(req, res){
+  // find and update the correct campground
+  Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
+    if(err){
+      res.redirect('/campgrounds');
+    } else {
+      res.redirect('/campgrounds/'+ req.params.id);
+    }
+  });
+  // redirect to show page
+})
+
 // MIDDLEWARE FOR isLoggedIn function
 function isLoggedIn(req, res, next){
   // CHECK IF isAuthenticated (COMES WITH PASSPORT),

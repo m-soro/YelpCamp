@@ -140,4 +140,43 @@ so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',comm
 * So for unauthorized user prevention, we just used the `isLoggedIn` middleware.
 * Then we updated the campground schema, so we have the username and id in it, then we populate that when we created the `newCampground` then we displayed it in the `show` page.
 
-    
+
+# Editing Campgrounds
+* Add Method-Override
+* Add Edit Route for Campgrounds
+* Add Link to Edit Page
+* Add Update Route
+* Fix $set problem
+
+- `npm install --save method-override` we'll need this in `Edit` and `Update` Route.
+- require it in `app.js` then `app.use` it
+- Edit is a `GET` route, then create the edit form `touch views/campgrounds/edit.ejs`.
+- then we copied the form from `new` to `edit` because theyre almost the same, the only difference is where the form is going and the type of request they are making.
+```
+    router.get('/:id/edit', function(req, res){
+      Campground.findById(req.params.id, function(err, foundCampground){
+        if(err){
+          res.redirect('/campgrounds');
+        } else {
+          res.render('campgrounds/edit', {campground:foundCampground});
+        }
+      });
+    });
+```
+- find the campground that we are editing and pass it in the edit form as `foundCampground`
+- then in `edit.js` change the action to submit to `EDIT` using the `foundCampground` id with method override.
+
+```
+  action="/campgrounds/<%= campground._id %>?_method=PUT"
+```
+- then pre fill the input field with what we are editing using the `value = <% campground.<whatever value to edit> %>`
+
+Next is the `UPDATE` route
+
+- in `UPDATE` route, the form needs to submit to `campgrounds/:id` in `PUT` then find the campground to be updated using `findByIdAndUpdate` then pass in the id then the campground info using `req.body.campground` this is an object that we created in `edit` form we wrapped all the campground details  to campground object  like this `campground[name]`.
+- then redirect to that same campground using `'/campgrounds/'+ req.params.id`.
+- then add an edit button in the show page
+
+`<a class='btn btn-warning' href="/campgrounds/<%= campground._id %>/edit"></a>`
+
+- At this point the edit is completed!
