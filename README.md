@@ -148,10 +148,10 @@ so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',comm
 * Add Update Route
 * Fix $set problem
 
-- `npm install --save method-override` we'll need this in `Edit` and `Update` Route.
+- `npm install --save method-override` we'll need this in `Edit` and `Update` Route. because form method is only post and get and we need to override this with `?_method=PUT`
 - require it in `app.js` then `app.use` it
 - Edit is a `GET` route, then create the edit form `touch views/campgrounds/edit.ejs`.
-- then we copied the form from `new` to `edit` because theyre almost the same, the only difference is where the form is going and the type of request they are making.
+- then we copied the form from `new` to `edit` because they are almost the same, the only difference is where the form is going and the type of request they are making.
 ```
     router.get('/:id/edit', function(req, res){
       Campground.findById(req.params.id, function(err, foundCampground){
