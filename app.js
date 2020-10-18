@@ -17,8 +17,8 @@ var commentRoutes         = require('./routes/comments'),
     campgroundRoutes      = require('./routes/campgrounds'),
     indexRoutes           = require('./routes/index')
 
-// seedDb(); //seed the database
-// deleteComment();
+//seedDb(); //seed the database
+//deleteComment();
 
 mongoose.connect('mongodb://localhost/yelp_camp',
 {useNewUrlParser:true, useUnifiedTopology: true});

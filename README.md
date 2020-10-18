@@ -89,3 +89,55 @@ so we can access the `:id` variable in `app.use('/campgrounds/:id/comments',comm
 *Remove the author field in* `views/comments/new.ejs`
 
   - In `route/comment.js` in comment.create let's associate the user to the comment by `comment.author.id = req.user._id` this is following the comment model and associate the user name by `comment.author.username = req.user.username` then `comment.save()`.
+
+## Users + Campgrounds
+* Prevent an unauthenticated user from creating a campground
+    - basically will do the same thing like the `Users + Comments`, but this time is for campgrounds. two ideas here is that we don't want anyone submitting a campground if they don't have an account. Anyone can view the campground but can't submit a comment or a campground if they don't have an account.
+    - point 2, is that we want to save the username and id to the newly created campground. so in the campground show page we can show who created it. so that we know who can delete that campground or comment thats why we need that id and username to work.
+
+    Let's start with the un authenticated user prevention.
+
+    - we don't want the user to see the `new` form if they are not log in.
+    so we'll protect the `new` and `post` routes, by adding `isLoggedIn` to both.
+    - this should prevent unauthorized access.
+
+* Save username+id to newly created campground
+    - we have to change the schema first, we'll add the author property as an object.
+    ```
+        author: {
+          id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+          },
+          username: String
+        },
+    ```
+    - set up the logic inside campground create, so when a campground is created we take the user's id and username.
+    ```
+      router.post('/',isLoggedIn, function(req, res){
+        var name = req.body.name;
+        var image = req.body.image;
+        var description = req.body.description;
+
+        // add username and id to created campground then pass it to new campground
+        var author = {
+          id: req.user._id,
+          username: re.user.username
+        }
+        var newCampground = {name: name, image: image, description: description, author:author};
+        Campground.create(newCampground, function(err, newCampground){
+          if(err){
+            console.log(err);
+          } else {
+            console.log(newCampground);
+            res.redirect('/campgrounds');
+          }
+        });
+      });
+    ```
+    - at this point the campground will have all the user's info
+
+* So for unauthorized user prevention, we just used the `isLoggedIn` middleware.
+* Then we updated the campground schema, so we have the username and id in it, then we populate that when we created the `newCampground` then we displayed it in the `show` page.
+
+    

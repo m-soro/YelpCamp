@@ -19,27 +19,35 @@ router.get('/', function(req, res){
 });
 
 // CREATE - Add new campground to db
-router.post('/', function(req, res){
+router.post('/',isLoggedIn, function(req, res){
   var name = req.body.name;
   var image = req.body.image;
   var description = req.body.description;
-  var newCampground = {name: name, image: image, description: description};
+  // add username and id to created campground then pass it to new campground
+  var author = {
+    id: req.user._id,
+    username: req.user.username
+  }
+  var newCampground = {name: name, image: image, description: description, author:author};
   Campground.create(newCampground, function(err, newCampground){
     if(err){
       console.log(err);
     } else {
+      console.log('==========================');
+      console.log(newCampground);
+      console.log('==========================');
       res.redirect('/campgrounds');
     }
   });
 });
 
 // NEW - Displays the form to create a new campground
-router.get('/new', function(req, res){
+router.get('/new',isLoggedIn, function(req, res){
   res.render('campgrounds/new');
 });
 
 // SHOW - shows more info about one campground
-router.get('/:id', function(req, res){
+router.get('/:id',isLoggedIn, function(req, res){
   // find the campground with provided ID
   Campground.findById(req.params.id).populate('comments').exec(function(err, foundCampground){
     if(err){
